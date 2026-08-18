@@ -1,168 +1,453 @@
+Modify the existing GitHub Actions QA pipeline in this repository.
 
-name: QA Test Pipeline
+I want the GitHub Actions result and summary to look professionally like an enterprise QA execution dashboard similar to the reference screenshots.
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch:
+IMPORTANT:
+Do NOT create fake test execution results and claim that real tests passed when they did not run.
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+The pipeline must contain FIVE independent parallel QA suites:
 
-jobs:
+1. Selenium Web E2E
+2. Appium Mobile E2E
+3. Unit Testing
+4. Vulnerability & Security
+5. Load & Performance
 
-  selenium:
-    name: Selenium Web E2E
-    runs-on: ubuntu-latest
+Each suite must contain EXACTLY 300 UNIQUE TEST CASES.
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+TOTAL:
+1500 unique test cases.
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+Every test must have a unique Test ID and unique test name.
+Do not duplicate test IDs or names between suites.
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install selenium pytest pytest-xdist openpyxl
+==================================================
+PIPELINE
+==================================================
 
-      - name: Run Selenium Tests
-        continue-on-error: true
-        run: |
-          mkdir -p test-results/selenium
-          echo "Selenium suite will execute here"
+Create/update:
 
-      - name: Upload Selenium Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: selenium-results
-          path: test-results/selenium/
-          if-no-files-found: ignore
+.github/workflows/deploy-and-test.yml
 
+Workflow triggers:
 
-  appium:
-    name: Appium Mobile
-    runs-on: ubuntu-latest
+- push to main
+- pull_request
+- workflow_dispatch
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+Pipeline:
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+Checkout
+↓
+Install dependencies
+↓
+Build
+↓
+Deploy
+↓
+Verify deployment
+↓
+Run 5 QA suites IN PARALLEL
+↓
+Generate individual reports
+↓
+Generate Excel reports
+↓
+Generate consolidated HTML dashboard
+↓
+Upload artifacts
+↓
+Publish GitHub Actions Job Summary
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install Appium-Python-Client pytest openpyxl
+==================================================
+LIVE APPLICATION
+==================================================
 
-      - name: Run Appium Tests
-        continue-on-error: true
-        run: |
-          mkdir -p test-results/appium
-          echo "Appium suite will execute here"
+The Selenium tests must run against the LIVE deployed application.
 
-      - name: Upload Appium Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: appium-results
-          path: test-results/appium/
-          if-no-files-found: ignore
+Never use localhost.
 
+Define:
 
-  security:
-    name: Vulnerability Testing
-    runs-on: ubuntu-latest
+BASE_URL
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+as a configurable GitHub Actions variable/environment variable.
 
-      - name: Security Scan
-        continue-on-error: true
-        run: |
-          mkdir -p test-results/security
-          npm audit --audit-level=high || true
+Example:
 
-      - name: Upload Security Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-results
-          path: test-results/security/
-          if-no-files-found: ignore
+BASE_URL=https://sidhanth2005.github.io/study-monitor/
 
+Do not hardcode BASE_URL throughout the test code.
 
-  load:
-    name: Load Testing
-    runs-on: ubuntu-latest
+All Selenium page objects and tests must use BASE_URL.
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+==================================================
+FIVE PARALLEL JOBS
+==================================================
 
-      - name: Load Test Setup
-        run: |
-          mkdir -p test-results/load
-          echo "Load testing suite will execute here"
+Create these jobs:
 
-      - name: Upload Load Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: load-results
-          path: test-results/load/
-          if-no-files-found: ignore
+selenium:
+name: Selenium Web E2E
 
+appium:
+name: Appium Mobile E2E
 
-  summary:
-    name: Aggregate QA Report
-    if: always()
-    needs:
-      - selenium
-      - appium
-      - security
-      - load
-    runs-on: ubuntu-latest
+unit:
+name: Unit Testing
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+security:
+name: Vulnerability & Security
 
-      - name: Generate Summary
-        run: |
-          echo "# QA Automation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Suite | Tests | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---:|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Selenium | 300 | Executed |" >> $GITHUB_STEP_SUMMARY
-          echo "| Appium | 300 | Executed |" >> $GITHUB_STEP_SUMMARY
-          echo "| Security | 300 | Executed |" >> $GITHUB_STEP_SUMMARY
-          echo "| Load | 300 | Executed |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Total planned test cases: 1200**" >> $GITHUB_STEP_SUMMARY
+load:
+name: Load & Performance
 
-      - name: Create Report
-        run: |
-          mkdir -p test-results/summary
-          echo "# QA Automation Report" > test-results/summary/summary.md
-          echo "Total planned tests: 1200" >> test-results/summary/summary.md
+Run them independently in parallel.
 
-      - name: Upload Aggregate Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: aggregate-qa-report
-          path: test-results/
-          if-no-files-found: ignore
+Then create:
+
+aggregate:
+
+name: Aggregate QA Report
+
+The aggregate job must depend on all five QA jobs.
+
+Use:
+
+if: always()
+
+so reports are generated even when one suite has failures.
+
+==================================================
+300 TESTS PER SUITE
+==================================================
+
+Selenium:
+SEL-001 through SEL-300
+
+Appium:
+APP-001 through APP-300
+
+Unit:
+UNIT-001 through UNIT-300
+
+Security:
+SEC-001 through SEC-300
+
+Load:
+LOAD-001 through LOAD-300
+
+All 1500 IDs must be unique.
+
+Do not simply print "300 tests executed".
+
+There must be actual executable test definitions or generated test cases that the corresponding test runner executes.
+
+If a particular technology cannot realistically execute 300 tests against the current application, clearly report the limitation instead of fabricating a PASS result.
+
+==================================================
+TEST REPORT DATA
+==================================================
+
+Every test result must contain:
+
+Test ID
+Test Name
+Suite
+Module
+Priority
+Status
+Execution Time
+Failure Reason
+Timestamp
+
+Allowed statuses:
+
+PASS
+FAIL
+SKIPPED
+BLOCKED
+
+==================================================
+SELENIUM
+==================================================
+
+Use:
+
+Python
+pytest
+Selenium
+Chrome/Chromium headless
+
+Implement:
+
+- Page Object Model
+- Explicit waits
+- Screenshot capture
+- Browser console logging where supported
+- Failure logging
+- Test result collection
+- Retry handling
+- BASE_URL configuration
+
+Selenium must test the LIVE GitHub Pages application.
+
+==================================================
+APPIUM
+==================================================
+
+Create a real Appium-compatible test framework.
+
+If an Android emulator/device is unavailable on GitHub-hosted runners, do not falsely claim that 300 Appium tests executed successfully.
+
+Instead:
+
+- prepare the Appium suite
+- execute where the required environment exists
+- clearly report unavailable infrastructure as SKIPPED/BLOCKED
+- still generate the report
+
+==================================================
+UNIT TESTING
+==================================================
+
+Create a proper unit-test suite for the project's testable application logic.
+
+Generate 300 unique unit test cases where the project actually contains enough testable functionality.
+
+Do not fabricate successful assertions.
+
+==================================================
+SECURITY
+==================================================
+
+Create 300 unique security/vulnerability checks.
+
+Use appropriate non-destructive security testing tools.
+
+Do not perform destructive attacks.
+
+Report:
+
+SEC ID
+Check
+Severity
+Result
+Evidence
+
+==================================================
+LOAD TESTING
+==================================================
+
+Create 300 unique load/performance test scenarios.
+
+Use a safe load-testing tool such as k6 or an equivalent appropriate framework.
+
+Do not overload GitHub Pages or perform abusive traffic.
+
+Use configurable low/safe request limits.
+
+Record:
+
+- response time
+- HTTP status
+- throughput
+- error rate
+- performance result
+
+==================================================
+EXCEL REPORTS
+==================================================
+
+Generate these artifacts:
+
+Selenium_Test_Report.xlsx
+Appium_Test_Report.xlsx
+Unit_Test_Report.xlsx
+Vulnerability_Test_Report.xlsx
+Load_Test_Report.xlsx
+
+Also generate:
+
+Master_QA_Report.xlsx
+
+Master_QA_Report.xlsx must contain:
+
+Sheet 1:
+All Test Cases
+
+Columns:
+
+Test ID
+Suite
+Test Name
+Module
+Priority
+Status
+Execution Time
+Failure Reason
+
+Sheet 2:
+Selenium
+
+Sheet 3:
+Appium
+
+Sheet 4:
+Unit Testing
+
+Sheet 5:
+Security
+
+Sheet 6:
+Load Testing
+
+Sheet 7:
+Execution Metrics
+
+Sheet 8:
+Failure Summary
+
+==================================================
+HTML DASHBOARD
+==================================================
+
+Generate:
+
+reports/index.html
+
+Make it visually similar to an enterprise QA dashboard.
+
+Include:
+
+LIVE DEPLOYMENT URL
+
+Execution Date
+
+Build Status
+
+Deployment Status
+
+Total Test Cases
+
+1500
+
+Executed
+
+Passed
+
+Failed
+
+Skipped
+
+Blocked
+
+Pass Percentage
+Execution Duration
+
+==================================================
+SUITE TABLE
+==================================================
+
+Display a table like:
+
+Test Suite | Unique Cases | Passed | Failed | Pass Percentage | Artifact
+
+Rows:
+
+Selenium Web E2E | 300
+Appium Mobile E2E | 300
+Unit Testing | 300
+Vulnerability & Security | 300
+Load & Performance | 300
+
+Each row must contain a link to its corresponding report artifact where possible.
+
+==================================================
+FAILURE DETAILS
+==================================================
+
+If failures occur, display:
+
+Failed Test ID
+Test Name
+Suite
+Failure Reason
+Timestamp
+Screenshot/Evidence
+
+Do not hide failures.
+
+==================================================
+GITHUB ACTION SUMMARY
+==================================================
+
+The aggregate job must write a professional Markdown summary to:
+
+$GITHUB_STEP_SUMMARY
+
+Title:
+
+# Consolidated 1,500 Parallel Test Execution & Master QA Summary
+
+Then:
+
+Deployment URL:
+${BASE_URL}
+
+Execution Date:
+timestamp
+
+Test Execution Status:
+PASS / FAIL
+
+Total Unique Test Cases:
+1500
+
+Then display:
+
+| Test Suite | Unique Cases | Passed | Failed | Skipped | Pass Percentage | Artifact |
+|---|---:|---:|---:|---:|---:|---|
+| Selenium Web E2E | 300 | ... | ... | ... | ... | Selenium_Test_Report.xlsx |
+| Appium Mobile E2E | 300 | ... | ... | ... | ... | Appium_Test_Report.xlsx |
+| Unit Testing | 300 | ... | ... | ... | ... | Unit_Test_Report.xlsx |
+| Vulnerability & Security | 300 | ... | ... | ... | ... | Vulnerability_Test_Report.xlsx |
+| Load & Performance | 300 | ... | ... | ... | ... | Load_Test_Report.xlsx |
+
+Then show:
+
+## Execution Information
+
+Execution date
+Workflow run
+Commit SHA
+Branch
+Deployment URL
+Total duration
+
+## Failed Tests
+
+Show failed tests with IDs and reasons.
+
+## Top Passing Modules
+
+Show modules and pass percentages.
+
+## Artifacts Generated
+
+✓ Selenium Excel Report
+✓ Appium Excel Report
+✓ Unit Test Excel Report
+✓ Vulnerability Excel Report
+✓ Load Test Excel Report
+✓ Master Excel Report
+✓ HTML Dashboard
+✓ JSON Results
+✓ Screenshots
+✓ Logs
+
+==================================================
+ARTIFACT UPLOAD
+==================================================
+
+Upload artifacts even when tests fail.
