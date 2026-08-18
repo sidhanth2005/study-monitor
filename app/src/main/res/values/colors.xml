@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#8B5CF6</color>
+    <color name="primary_dark">#6D28D9</color>
+    <color name="secondary">#2DD4BF</color>
+    <color name="accent">#A78BFA</color>
+
+    <color name="background">#060816</color>
+    <color name="surface">#10172A</color>
+    <color name="card">#171D33</color>
+    <color name="surface_variant">#1F2A46</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#9AA6C7</color>
+
+    <color name="success">#34D399</color>
+    <color name="warning">#FBBF24</color>
+    <color name="danger">#FB7185</color>
+
+    <color name="divider">#26304F</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+
+    <color name="skyBlue">#2DD4BF</color>
+    <color name="pink">#F472B6</color>
+    <color name="purple_500">#8B5CF6</color>
+    <color name="violet">#8B5CF6</color>
+    <color name="grey">#26304F</color>
+    <color name="app_icon_background">#060816</color>
+</resources>

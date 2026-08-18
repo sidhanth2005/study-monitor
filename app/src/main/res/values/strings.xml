@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name" translatable="false">GURU</string>
+    <string name="app_tagline" translatable="false">Premium focus companion</string>
+    <string name="dashboard_title" translatable="false">Focus dashboard</string>
+    <string name="settings_title" translatable="false">Settings</string>
+    <string name="about_title" translatable="false">About</string>
+    <string name="about_author" translatable="false">By Sidhanth Sundarrajan</string>
+    <string name="about_version" translatable="false">Version 1.10 • Premium Edition</string>
+    <string name="repair_app" translatable="false">Repair app</string>
+    <string name="repair_accessibility" translatable="false">Accessibility help</string>
+    <string name="permission_usage_title" translatable="false">Usage access</string>
+    <string name="permission_notification_title" translatable="false">Notification access</string>
+    <string name="permission_draw_over_title" translatable="false">Draw over other apps</string>
+    <string name="permission_grant" translatable="false">Grant</string>
+    <string name="permission_done" translatable="false">Done</string>
+
+    <string name="draw_over_apps" translatable="false">
+        When you grant the \"Draw Over Other Apps\" permission to an app, it will be able to :
+        \n1. Display content on top of other apps.
+        \n2. Interact with other apps, such as starting or stopping other apps.
+    </string>
+    <string name="noti_per" translatable="false">
+        The \"Notification Access\" permission allows our app to read the current set of notifications,
+        including any metadata and attached intents.
+        \n\nThis permission can be used by apps to provide
+        various features, such as :
+        \n1. Displaying a list of all your notifications in a single place.
+        \n2. Snoozing or dismissing notifications.
+    </string>
+    <string name="usage_per" translatable="false">
+        The \"Usage Access\" permission allows an app to access data about how other apps
+        are being used. This data includes the names of the apps, how much time is spent
+        in each app, and when the apps were last used.
+        \n\nUsage Access permission can be used
+        by apps to provide various features, such as:
+        \n1. Displaying a list of all the apps that you have used on a given day or week.
+        \n2. Blocking or restricting access to certain apps.
+    </string>
+
+    <string name="take_a_break" translatable="false">
+        Take a break from your phone \nand focus on things that really matter.
+    </string>
+
+    <string name="normal_mode" translatable="false">
+        Normal mode will allow you to make changes and white list apps/websites at any time.
+    </string>
+
+    <string name="strict_mode" translatable="false">
+        Prevents you from changing settings and uninstalling the app.
+    </string>
+
+    <string name="take_a_break_whitelist" translatable="false">
+        Select the applications you want to access when \'Take a Break\' is blocking you
+    </string>
+
+    <string name="usage_limit_ex">e.g. 30 minutes per day</string>
+
+    <string name="launches_ex">e.g. 20 launches per day</string>
+
+    <string name="wait_timer_ex">e.g. block access entirely</string>
+
+    <string name="statistics">View your screen time, launch count &amp; more</string>
+
+    <string name="break_inst" translatable="false">
+        1. You won\'t be able to use your phone while the break is enabled. \n
+        2. Also, you won\'t be able to receive any calls while the break is underway. \n
+        3. Enable stop button to be able to stop the break. \n
+        4. Enable call button to be able to make calls. \n
+        5. Block notifications to prevent further distractions. \n
+    </string>
+
+    <string name="motivational_text">
+        The secret of getting ahead is getting started.
+    </string>
+
+    <string name="profile_note">
+        Note: Schedule - Usage Limit &amp; Number of Launches won\'t work for websites and keywords.
+    </string>
+
+    <string name="accessibility_service_description">This app requires this setting to detect the keywords and websites in the browser.</string>
+</resources>
